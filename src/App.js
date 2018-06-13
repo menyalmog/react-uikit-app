@@ -1,21 +1,65 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {
+  Route,
+  Switch,
+  Link,
+  NavLink
+} from 'react-router-dom';
 import './App.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
-}
+const AppNav = () => (
+  <ul className="App-nav">
+    <li><NavLink to="/companies">Companies</NavLink></li>
+    <li><NavLink to="/discover">Discover</NavLink></li>
+  </ul>
+);
 
-export default App;
+const Company = ({ match }) => (
+  <div>
+    <h3>{match.params.companyId}</h3>
+  </div>
+);
+
+const Companies = ({ match }) => (
+  <div>
+    <h2>Companies</h2>
+    <ul>
+      <li>
+        <Link to="company/company1">
+          Company 1
+        </Link>
+      </li>
+      <li>
+        <Link to="company/company2">
+          Company 2
+        </Link>
+      </li>
+    </ul>
+  </div>
+);
+
+const Discover = () => (
+  <div>
+    <h2>Discover</h2>
+  </div>
+);
+
+const App = () => (
+  <div className="App">
+    <header className="App-header">
+      <AppNav/>
+    </header>
+
+    <Switch>
+      <Route path="/companies" component={Companies}/>
+      <Route path="/company/:companyId" component={Company}/>
+      <Route path="/discover" component={Discover}/>
+      <Route component={Companies}/>
+    </Switch>
+  </div>
+);
+
+export {
+  App as default,
+  AppNav
+};

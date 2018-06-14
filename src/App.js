@@ -5,6 +5,7 @@ import {
   Link,
   NavLink
 } from 'react-router-dom';
+import agent from './agent';
 import './App.css';
 
 const AppNav = () => (
@@ -20,23 +21,65 @@ const Company = ({ match }) => (
   </div>
 );
 
-const Companies = ({ match }) => (
-  <div>
-    <h2>Companies</h2>
-    <ul>
-      <li>
-        <Link to="company/company1">
-          Company 1
-        </Link>
-      </li>
-      <li>
-        <Link to="company/company2">
-          Company 2
-        </Link>
-      </li>
-    </ul>
+const CompanyPreview = ({ company }) => (
+  <div className="company-preview">
+    <Link to={'company/' + company.id}>
+      {company.name}
+    </Link>
   </div>
 );
+
+const CompanyList = ({ companies }) => {
+  if (!companies) {
+    return (
+      <div className="company-preview">Loading...</div>
+    );
+  }
+
+  if (companies.length === 0) {
+    return (
+      <div className="company-preview">
+        No companies here... yet.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {
+        companies.map(company => {
+          return (
+            <CompanyPreview company={company} key={company.id} />
+          );
+        })
+      }
+    </div>
+  );
+};
+
+class Companies extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { companies: null };
+  }
+
+  componentDidMount() {
+    agent.Companies.all().then(companies => {
+      this.setState({ companies });
+    });
+  }
+
+  render() {
+    const { companies } = this.state;
+
+    return (
+      <div>
+        <h2>Companies</h2>
+        <CompanyList companies={companies} />
+      </div>
+    );
+  }
+}
 
 const Discover = () => (
   <div>
@@ -61,5 +104,8 @@ const App = () => (
 
 export {
   App as default,
-  AppNav
+  AppNav,
+  Companies,
+  CompanyList,
+  CompanyPreview
 };

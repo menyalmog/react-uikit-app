@@ -6,7 +6,8 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "superagent": "^3.8.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -19,5 +20,11 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "jest-enzyme": "^6.0.1",
     "react-test-renderer": "^16.4.0"
+  },
+  "proxy": {
+    "/api": {
+      "target": "https://stage-api.gldi.co",
+      "changeOrigin": true
+    }
   }
 }

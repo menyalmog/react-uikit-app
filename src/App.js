@@ -15,11 +15,36 @@ const AppNav = () => (
   </ul>
 );
 
-const Company = ({ match }) => (
-  <div>
-    <h3>{match.params.companyId}</h3>
-  </div>
-);
+class Company extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { company: {} };
+  }
+
+  componentDidMount() {
+    const { companyID } = this.props.match.params;
+
+    agent.Companies.byID(companyID).then(company => {
+      this.setState({ company });
+    });
+  }
+
+  render() {
+    const { company } = this.state;
+
+    if (!company.name) {
+      return (
+        <div className="company-view">Loading...</div>
+      );
+    }
+
+    return (
+      <div className="company-view">
+        <h3>{company.name}</h3>
+      </div>
+    );
+  }
+}
 
 const CompanyPreview = ({ company }) => (
   <div className="company-preview">
@@ -64,7 +89,9 @@ class Companies extends Component {
   }
 
   componentDidMount() {
-    agent.Companies.all().then(companies => {
+    agent.Companies.all().then(response => {
+      const companies = response.results;
+
       this.setState({ companies });
     });
   }
@@ -95,7 +122,7 @@ const App = () => (
 
     <Switch>
       <Route path="/companies" component={Companies}/>
-      <Route path="/company/:companyId" component={Company}/>
+      <Route path="/company/:companyID" component={Company}/>
       <Route path="/discover" component={Discover}/>
       <Route component={Companies}/>
     </Switch>
@@ -107,5 +134,6 @@ export {
   AppNav,
   Companies,
   CompanyList,
-  CompanyPreview
+  CompanyPreview,
+  Company
 };

@@ -3,7 +3,7 @@ import Enzyme, { shallow, mount, render } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { Link, NavLink } from 'react-router-dom';
-import App, { AppNav, CompanyPreview, CompanyList, Companies } from './App';
+import App, { AppNav, Company, CompanyPreview, CompanyList, Companies } from './App';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -24,6 +24,27 @@ describe('<App />', () => {
 describe('<AppNav />', () => {
   it('should contain at least 2 <NavLink /> components', () => {
     expect(shallow(<AppNav />).find(NavLink).length).toBeGreaterThan(1);
+  });
+});
+
+describe('<Company />', () => {
+  const match = {
+    params: {
+      companyID: 1
+    }
+  };
+
+  it('should render "Loading..." when state.company is empty', () => {
+    expect(shallow(<Company match={match} />).text()).toBe('Loading...');
+  });
+
+  it('should render the company name', () => {
+    const company = {
+      id: 1,
+      name: 'Good Company'
+    };
+
+    expect(mount(<Company match={match} />).setState({ company }).find('h3').text()).toBe(company.name);
   });
 });
 

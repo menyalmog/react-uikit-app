@@ -108,11 +108,71 @@ class Companies extends Component {
   }
 }
 
-const Discover = () => (
-  <div>
-    <h2>Discover</h2>
+const DiscoverView = ({ discoverObject }) => (
+  <div className="discover-view">
+    <Link to={'company/' + discoverObject.action.id}>
+      {discoverObject.title}
+    </Link>
   </div>
 );
+
+const DiscoverList = ({ discoverList }) => {
+  if (!discoverList) {
+    return (
+      <div className="discover-view">Loading...</div>
+    );
+  }
+
+  if (discoverList.length === 0) {
+    return (
+      <div className="discover-view">
+        Nothing to discover... yet.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {
+        discoverList.map(discoverObject => {
+          if (discoverObject.video) {
+            return (
+              <DiscoverView discoverObject={discoverObject} key={discoverObject.id} />
+            );
+          } else {
+            return '';
+          }
+        })
+      }
+    </div>
+  );
+};
+
+class Discover extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { discoverList: null };
+  }
+
+  componentDidMount() {
+    agent.Discover.all().then(response => {
+      const discoverList = response.results;
+
+      this.setState({ discoverList });
+    });
+  }
+
+  render() {
+    const { discoverList } = this.state;
+
+    return (
+      <div>
+        <h2>Discover</h2>
+        <DiscoverList discoverList={discoverList} />
+      </div>
+    );
+  }
+}
 
 const App = () => (
   <div className="App">
@@ -132,8 +192,11 @@ const App = () => (
 export {
   App as default,
   AppNav,
-  Companies,
-  CompanyList,
+  Company,
   CompanyPreview,
-  Company
+  CompanyList,
+  Companies,
+  DiscoverView,
+  DiscoverList,
+  Discover
 };

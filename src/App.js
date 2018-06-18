@@ -9,10 +9,14 @@ import agent from './agent';
 import './App.css';
 
 const AppNav = () => (
-  <ul className="App-nav">
-    <li><NavLink to="/companies">Companies</NavLink></li>
-    <li><NavLink to="/discover">Discover</NavLink></li>
-  </ul>
+  <nav className="uk-navbar-container" uk-navbar>
+    <div className="uk-navbar-left">
+      <ul className="uk-navbar-nav">
+        <li><NavLink activeClassName="uk-active" to="/companies">Companies</NavLink></li>
+        <li><NavLink activeClassName="uk-active" to="/discover">Discover</NavLink></li>
+      </ul>
+    </div>
+  </nav>
 );
 
 class Company extends Component {
@@ -47,11 +51,11 @@ class Company extends Component {
 }
 
 const CompanyPreview = ({ company }) => (
-  <div className="company-preview">
+  <li className="company-preview">
     <Link to={'company/' + company.id}>
       {company.name}
     </Link>
-  </div>
+  </li>
 );
 
 const CompanyList = ({ companies }) => {
@@ -70,7 +74,7 @@ const CompanyList = ({ companies }) => {
   }
 
   return (
-    <div>
+    <ul className="uk-list uk-list-large uk-list-divider">
       {
         companies.map(company => {
           return (
@@ -78,7 +82,7 @@ const CompanyList = ({ companies }) => {
           );
         })
       }
-    </div>
+    </ul>
   );
 };
 
@@ -101,7 +105,7 @@ class Companies extends Component {
 
     return (
       <div>
-        <h2>Companies</h2>
+        <h2 className="uk-heading-primary uk-padding">Companies</h2>
         <CompanyList companies={companies} />
       </div>
     );
@@ -109,11 +113,11 @@ class Companies extends Component {
 }
 
 const DiscoverView = ({ discoverObject }) => (
-  <div className="discover-view">
+  <li className="discover-view">
     <Link to={'company/' + discoverObject.action.id}>
       {discoverObject.title}
     </Link>
-  </div>
+  </li>
 );
 
 const DiscoverList = ({ discoverList }) => {
@@ -132,7 +136,7 @@ const DiscoverList = ({ discoverList }) => {
   }
 
   return (
-    <div>
+    <ul className="uk-list uk-list-large uk-list-divider">
       {
         discoverList.map(discoverObject => {
           if (discoverObject.video) {
@@ -144,7 +148,7 @@ const DiscoverList = ({ discoverList }) => {
           }
         })
       }
-    </div>
+    </ul>
   );
 };
 
@@ -167,7 +171,7 @@ class Discover extends Component {
 
     return (
       <div>
-        <h2>Discover</h2>
+        <h2 className="uk-heading-primary uk-padding">Discover</h2>
         <DiscoverList discoverList={discoverList} />
       </div>
     );
@@ -175,8 +179,8 @@ class Discover extends Component {
 }
 
 const App = () => (
-  <div className="App">
-    <header className="App-header">
+  <div className="uk-container">
+    <header>
       <AppNav/>
     </header>
 

@@ -5,8 +5,8 @@ import { MemoryRouter as Router } from 'react-router-dom';
 import { Link, NavLink } from 'react-router-dom';
 import App, {
   AppNav,
+  CompanyView,
   Company,
-  CompanyPreview,
   CompanyList,
   Companies,
   DiscoverView,
@@ -22,7 +22,7 @@ describe('<App />', () => {
       <Router>
         <App/>
       </Router>
-    ).find('.App').length).toBe(1);
+    ).find('header').length).toBe(1);
   });
 
   it('should render <AppNav /> component', () => {
@@ -33,6 +33,24 @@ describe('<App />', () => {
 describe('<AppNav />', () => {
   it('should contain at least 2 <NavLink /> components', () => {
     expect(shallow(<AppNav />).find(NavLink).length).toBeGreaterThan(1);
+  });
+});
+
+describe('<CompanyView />', () => {
+  const company = {
+    id: 1,
+    name: 'Good Company',
+    binary: 'video1',
+    industry: { name: 'Essential' },
+    jobs_count: { opened_count: 2 }
+  };
+
+  it('should render <a /> element to company', () => {
+    expect(shallow(<CompanyView company={company} />).find('h3 a').text()).toBe(company.name);
+  });
+
+  it('should render <video /> element when props.company.binary exist', () => {
+    expect(shallow(<CompanyView company={company} />).find('video').length).toBe(1);
   });
 });
 
@@ -47,25 +65,15 @@ describe('<Company />', () => {
     expect(shallow(<Company match={match} />).text()).toBe('Loading...');
   });
 
-  it('should render the company name', () => {
+  it('should render <CompanyView /> component', () => {
     const company = {
       id: 1,
       name: 'Good Company'
     };
 
-    expect(mount(<Company match={match} />).setState({ company }).find('h3').text()).toBe(company.name);
-  });
-});
-
-describe('<CompanyPreview />', () => {
-  it('should render <Link /> to company', () => {
-    const company = { id: 1, name: 'Good Company' };
-
-    expect(shallow(<CompanyPreview company={company} />).contains(
-      <Link to={'company/' + company.id}>
-        {company.name}
-      </Link>
-    )).toBe(true);
+    expect(
+      shallow(<Company match={match} />).setState({ company }).contains(<CompanyView company={company} />)
+    ).toBe(true);
   });
 });
 
@@ -78,13 +86,13 @@ describe('<CompanyList />', () => {
     expect(shallow(<CompanyList companies={[]} />).text()).toBe('No companies here... yet.');
   });
 
-  it('should render 2 <CompanyPreview /> components', () => {
+  it('should render 2 <CompanyView /> components', () => {
     const companies = [
       { id: 1, name: 'Good Company' },
       { id: 2, name: 'Another Good Company' }
     ];
 
-    expect(shallow(<CompanyList companies={companies} />).find(CompanyPreview).length).toEqual(2);
+    expect(shallow(<CompanyList companies={companies} />).find(CompanyView).length).toEqual(2);
   });
 });
 
@@ -99,14 +107,30 @@ describe('<Companies />', () => {
 });
 
 describe('<DiscoverView />', () => {
-  it('should render <Link /> to company when it\'s a video', () => {
-    const discoverObject = { id: 11, action: { id: 1 }, video: 'video1', title: 'Good Company' };
+  const discoverObject = {
+    id: 11,
+    action: { id: 1 },
+    video: 'video1',
+    binary: 'video1',
+    logo: 'logo1',
+    title: 'Good Company',
+    company_info: { jobs_count: { opened_count: 2 } }
+  };
 
+  it('should render <Link /> to company when it\'s a video', () => {
     expect(shallow(<DiscoverView discoverObject={discoverObject} />).contains(
       <Link to={'company/' + discoverObject.action.id}>
-        {discoverObject.title}
+        <span>
+          <img className="uk-logo" src={discoverObject.logo} alt="Logo" />
+          <br />
+          {discoverObject.title}
+        </span>
       </Link>
     )).toBe(true);
+  });
+
+  it('should render <video /> element when props.discoverObject.binary exist', () => {
+    expect(shallow(<DiscoverView discoverObject={discoverObject} />).find('video').length).toBe(1);
   });
 });
 

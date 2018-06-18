@@ -9,7 +9,7 @@ import agent from './agent';
 import './App.css';
 
 const AppNav = () => (
-  <nav className="uk-navbar-container" uk-navbar>
+  <nav className="uk-navbar-container" uk-navbar="true">
     <div className="uk-navbar-left">
       <ul className="uk-navbar-nav">
         <li><NavLink activeClassName="uk-active" to="/companies">Companies</NavLink></li>
@@ -17,6 +17,52 @@ const AppNav = () => (
       </ul>
     </div>
   </nav>
+);
+
+const CompanyView = ({ company }) => (
+  <div className="uk-padding">
+    <h3>
+      <a href={window.location.pathname.startsWith('/company') ? 'http://' + company.website : 'company/' + company.id}>
+        <img className="uk-logo" src={company.logo} alt="Logo" />
+        <br />
+        {company.name}
+      </a>
+    </h3>
+    <h4 className="uk-margin-remove-top">
+      {company.overview}
+    </h4>
+    <ul className="uk-list uk-list-striped uk-width-1-2">
+      <li>
+        Industry: {company.industry.name}
+      </li>
+      <li>
+        Size: {company.size}
+      </li>
+      <li>
+        Location: {company.location}
+      </li>
+      <li>
+        Plan: {company.plan}
+      </li>
+      <li>
+        Opened Jobs: {company.jobs_count.opened_count}
+      </li>
+      <li>
+        Website:&nbsp;
+        <a href={'http://' + company.website}>
+          {company.website}
+        </a>
+      </li>
+    </ul>
+    <p>
+      {company.about}
+    </p>
+    {company.binary &&
+      <video className="uk-width-1-1" controls uk-video="autoplay: inview" poster={company.video_still}>
+        <source src={company.binary} type="video/mp4" />
+      </video>
+    }
+  </div>
 );
 
 class Company extends Component {
@@ -38,36 +84,26 @@ class Company extends Component {
 
     if (!company.name) {
       return (
-        <div className="company-view">Loading...</div>
+        <div className="uk-padding">Loading...</div>
       );
     }
 
     return (
-      <div className="company-view">
-        <h3>{company.name}</h3>
-      </div>
+      <CompanyView company={company} />
     );
   }
 }
 
-const CompanyPreview = ({ company }) => (
-  <li className="company-preview">
-    <Link to={'company/' + company.id}>
-      {company.name}
-    </Link>
-  </li>
-);
-
 const CompanyList = ({ companies }) => {
   if (!companies) {
     return (
-      <div className="company-preview">Loading...</div>
+      <div className="uk-padding">Loading...</div>
     );
   }
 
   if (companies.length === 0) {
     return (
-      <div className="company-preview">
+      <div className="uk-padding">
         No companies here... yet.
       </div>
     );
@@ -78,7 +114,9 @@ const CompanyList = ({ companies }) => {
       {
         companies.map(company => {
           return (
-            <CompanyPreview company={company} key={company.id} />
+            <li key={company.id}>
+              <CompanyView company={company} />
+            </li>
           );
         })
       }
@@ -105,31 +143,62 @@ class Companies extends Component {
 
     return (
       <div>
-        <h2 className="uk-heading-primary uk-padding">Companies</h2>
+        <h2 className="uk-heading-primary uk-padding uk-padding-remove-bottom">Companies</h2>
         <CompanyList companies={companies} />
       </div>
     );
   }
 }
 
-const DiscoverView = ({ discoverObject }) => (
-  <li className="discover-view">
-    <Link to={'company/' + discoverObject.action.id}>
+const DiscoverView = ({ discoverObject }) => {
+  const discoverHeader = (
+    <span>
+      <img className="uk-logo" src={discoverObject.logo} alt="Logo" />
+      <br />
       {discoverObject.title}
+    </span>
+  );
+  const discoverLink = (
+    <Link to={'company/' + discoverObject.action.id}>
+      {discoverHeader}
     </Link>
-  </li>
-);
+  );
+
+  return (
+    <div className="uk-padding">
+      <h3>
+        {discoverObject.video ? discoverLink : discoverHeader}
+      </h3>
+      <h4 className="uk-margin-remove-top">
+        {discoverObject.subtitle}
+      </h4>
+      <ul className="uk-list uk-list-striped uk-width-1-2">
+        <li>
+          Opened Jobs: {discoverObject.company_info.jobs_count.opened_count}
+        </li>
+        <li>
+          Updated at: {new Date(discoverObject.updated_at).toLocaleString()}
+        </li>
+      </ul>
+      {discoverObject.binary &&
+        <video className="uk-width-1-1" controls uk-video="autoplay: inview" poster={discoverObject.video_still}>
+          <source src={discoverObject.binary} type="video/mp4" />
+        </video>
+      }
+    </div>
+  );
+}
 
 const DiscoverList = ({ discoverList }) => {
   if (!discoverList) {
     return (
-      <div className="discover-view">Loading...</div>
+      <div className="uk-padding">Loading...</div>
     );
   }
 
   if (discoverList.length === 0) {
     return (
-      <div className="discover-view">
+      <div className="uk-padding">
         Nothing to discover... yet.
       </div>
     );
@@ -141,7 +210,9 @@ const DiscoverList = ({ discoverList }) => {
         discoverList.map(discoverObject => {
           if (discoverObject.video) {
             return (
-              <DiscoverView discoverObject={discoverObject} key={discoverObject.id} />
+              <li key={discoverObject.id}>
+                <DiscoverView discoverObject={discoverObject} />
+              </li>
             );
           } else {
             return '';
@@ -171,7 +242,7 @@ class Discover extends Component {
 
     return (
       <div>
-        <h2 className="uk-heading-primary uk-padding">Discover</h2>
+        <h2 className="uk-heading-primary uk-padding uk-padding-remove-bottom">Discover</h2>
         <DiscoverList discoverList={discoverList} />
       </div>
     );
@@ -197,7 +268,7 @@ export {
   App as default,
   AppNav,
   Company,
-  CompanyPreview,
+  CompanyView,
   CompanyList,
   Companies,
   DiscoverView,
